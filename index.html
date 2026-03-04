@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ITパスポートクイズ</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Hiragino Kaku Gothic ProN', 'Meiryo', sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .container {
+      background: #fff;
+      border-radius: 16px;
+      padding: 36px;
+      max-width: 720px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4);
+    }
+
+    h1 {
+      text-align: center;
+      color: #0f3460;
+      font-size: 1.6rem;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 28px;
+    }
+
+    .progress-bar {
+      background: #e0e0e0;
+      border-radius: 8px;
+      height: 8px;
+      margin-bottom: 24px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      background: linear-gradient(90deg, #0f3460, #e94560);
+      height: 100%;
+      border-radius: 8px;
+      transition: width 0.4s ease;
+    }
+
+    .question-meta {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+      font-size: 0.85rem;
+      color: #888;
+    }
+
+    .category-badge {
+      background: #0f3460;
+      color: #fff;
+      padding: 3px 10px;
+      border-radius: 12px;
+      font-size: 0.75rem;
+    }
+
+    .question-text {
+      font-size: 1.1rem;
+      color: #222;
+      line-height: 1.7;
+      margin-bottom: 24px;
+      font-weight: 500;
+    }
+
+    .options {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .option-btn {
+      background: #f8f9fa;
+      border: 2px solid #dee2e6;
+      border-radius: 10px;
+      padding: 14px 18px;
+      text-align: left;
+      cursor: pointer;
+      font-size: 0.95rem;
+      color: #333;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      background: #e8f0fe;
+      border-color: #0f3460;
+      color: #0f3460;
+    }
+
+    .option-btn.correct {
+      background: #d4edda;
+      border-color: #28a745;
+      color: #155724;
+    }
+
+    .option-btn.incorrect {
+      background: #f8d7da;
+      border-color: #dc3545;
+      color: #721c24;
+    }
+
+    .option-btn:disabled { cursor: default; }
+
+    .option-label {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #dee2e6;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+      transition: background 0.2s;
+    }
+
+    .option-btn.correct .option-label { background: #28a745; color: #fff; }
+    .option-btn.incorrect .option-label { background: #dc3545; color: #fff; }
+
+    .explanation {
+      margin-top: 20px;
+      padding: 16px;
+      background: #f0f4ff;
+      border-left: 4px solid #0f3460;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      color: #333;
+      line-height: 1.6;
+      display: none;
+    }
+
+    .explanation.show { display: block; }
+
+    .explanation strong { color: #0f3460; }
+
+    .btn-next {
+      margin-top: 24px;
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(90deg, #0f3460, #e94560);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      display: none;
+      transition: opacity 0.2s;
+    }
+
+    .btn-next:hover { opacity: 0.9; }
+    .btn-next.show { display: block; }
+
+    /* Result screen */
+    .result {
+      text-align: center;
+      display: none;
+    }
+
+    .result.show { display: block; }
+
+    .score-circle {
+      width: 140px;
+      height: 140px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #0f3460, #e94560);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      color: #fff;
+      box-shadow: 0 8px 24px rgba(15,52,96,0.4);
+    }
+
+    .score-number {
+      font-size: 2.4rem;
+      font-weight: bold;
+      line-height: 1;
+    }
+
+    .score-label { font-size: 0.85rem; margin-top: 4px; }
+
+    .result h2 {
+      font-size: 1.4rem;
+      color: #0f3460;
+      margin-bottom: 12px;
+    }
+
+    .result-message {
+      color: #555;
+      margin-bottom: 28px;
+      line-height: 1.6;
+    }
+
+    .result-breakdown {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 28px;
+    }
+
+    .breakdown-item {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 14px 8px;
+      font-size: 0.85rem;
+    }
+
+    .breakdown-item .val {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #0f3460;
+    }
+
+    .btn-restart {
+      padding: 14px 40px;
+      background: linear-gradient(90deg, #0f3460, #e94560);
+      color: #fff;
+      border: none;
+      border-radius: 10px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: opacity 0.2s;
+    }
+
+    .btn-restart:hover { opacity: 0.9; }
+
+    .quiz-area { display: block; }
+    .quiz-area.hide { display: none; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>🖥️ ITパスポートクイズ</h1>
+  <p class="subtitle">ITパスポート試験の頻出問題にチャレンジしよう！</p>
+
+  <!-- Quiz area -->
+  <div class="quiz-area" id="quizArea">
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <div class="question-meta">
+      <span id="questionCounter">問題 1 / 10</span>
+      <span class="category-badge" id="categoryBadge">カテゴリ</span>
+    </div>
+
+    <p class="question-text" id="questionText"></p>
+
+    <div class="options" id="optionsContainer"></div>
+
+    <div class="explanation" id="explanation"></div>
+
+    <button class="btn-next" id="btnNext" onclick="nextQuestion()">次の問題へ →</button>
+  </div>
+
+  <!-- Result area -->
+  <div class="result" id="resultArea">
+    <div class="score-circle">
+      <span class="score-number" id="scoreNumber">0</span>
+      <span class="score-label">/ 10 問</span>
+    </div>
+    <h2 id="resultTitle"></h2>
+    <p class="result-message" id="resultMessage"></p>
+    <div class="result-breakdown">
+      <div class="breakdown-item">
+        <div class="val" id="correctCount">0</div>
+        <div>正解</div>
+      </div>
+      <div class="breakdown-item">
+        <div class="val" id="incorrectCount">0</div>
+        <div>不正解</div>
+      </div>
+      <div class="breakdown-item">
+        <div class="val" id="accuracyRate">0%</div>
+        <div>正答率</div>
+      </div>
+    </div>
+    <button class="btn-restart" onclick="restartQuiz()">もう一度挑戦する 🔄</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  {
+    category: "テクノロジ系",
+    text: "OSI参照モデルにおいて、データの暗号化や圧縮を担当する層はどれか？",
+    options: ["トランスポート層", "セッション層", "プレゼンテーション層", "アプリケーション層"],
+    answer: 2,
+    explanation: "プレゼンテーション層（第6層）は、データの表現形式の変換、暗号化・復号化、圧縮・伸長を担当します。アプリケーション層（第7層）はユーザーに最も近い層で、HTTP・FTPなどのプロトコルが該当します。"
+  },
+  {
+    category: "テクノロジ系",
+    text: "CPU の処理速度を向上させる技術のうち、複数の命令を同時に実行するために命令を複数の段階に分けて処理する方式はどれか？",
+    options: ["キャッシュメモリ", "パイプライン", "スーパースカラ", "マルチコア"],
+    answer: 1,
+    explanation: "パイプラインは、CPU の命令処理を複数のステージ（フェッチ・デコード・実行・書き込みなど）に分割し、各ステージを並行して処理することで スループットを向上させる技術です。"
+  },
+  {
+    category: "テクノロジ系",
+    text: "関係データベースにおいて、データの整合性を保つため、外部キーが参照先テーブルに存在する値のみを取れるように制約することを何というか？",
+    options: ["一意性制約", "参照整合性制約", "NOT NULL制約", "チェック制約"],
+    answer: 1,
+    explanation: "参照整合性制約（外部キー制約）は、外部キーの値が参照先テーブルの主キーに存在する値でなければならないという制約です。これによりデータの矛盾を防ぎます。"
+  },
+  {
+    category: "テクノロジ系",
+    text: "次のうち、対称鍵暗号方式に該当するものはどれか？",
+    options: ["RSA", "AES", "DSA", "楕円曲線暗号"],
+    answer: 1,
+    explanation: "AES（Advanced Encryption Standard）は代表的な対称鍵暗号方式です。暗号化と復号に同じ鍵を使います。RSA・DSA・楕円曲線暗号は公開鍵暗号方式（非対称鍵暗号方式）です。"
+  },
+  {
+    category: "マネジメント系",
+    text: "プロジェクトマネジメントにおける WBS（Work Breakdown Structure）の説明として、正しいものはどれか？",
+    options: [
+      "作業の依存関係とスケジュールを表したネットワーク図",
+      "プロジェクトの作業を階層的に分解した成果物指向の構造図",
+      "各作業担当者と役割を示した責任分担表",
+      "コストと進捗を管理するための予算管理表"
+    ],
+    answer: 1,
+    explanation: "WBS（Work Breakdown Structure）は、プロジェクトの全作業を管理可能な小さな単位に階層的に分解した図です。成果物を中心に分解し、スコープの漏れを防ぎます。ネットワーク図はアローダイアグラムやPERTが該当します。"
+  },
+  {
+    category: "マネジメント系",
+    text: "システム開発において、発注者と受注者の間で品質・費用・納期などの要件を明確にした書類はどれか？",
+    options: ["SLA（サービスレベル合意書）", "RFP（提案依頼書）", "NDA（秘密保持契約書）", "SOW（作業範囲記述書）"],
+    answer: 0,
+    explanation: "SLA（Service Level Agreement）は、サービスの提供者と利用者の間で、提供するサービスの品質水準（稼働率、応答時間など）を定めた合意書です。ただし本問はシステム開発文脈なのでSOWも近いですが、品質・費用・納期をまとめた合意文書という点でSLAが最適です。"
+  },
+  {
+    category: "ストラテジ系",
+    text: "企業の情報システムに関する中長期計画を立案し、経営戦略と整合した形でITを活用するための全社的な計画を何というか？",
+    options: ["BCP（事業継続計画）", "EA（エンタープライズアーキテクチャ）", "情報システム戦略（IT戦略）", "DFD（データフロー図）"],
+    answer: 2,
+    explanation: "情報システム戦略（IT戦略）は、経営戦略を実現するために情報システムをどのように活用・整備するかを定めた中長期計画です。EA（エンタープライズアーキテクチャ）は組織全体のITと業務の体系的な設計手法で、IT戦略の実現手段の一つです。"
+  },
+  {
+    category: "ストラテジ系",
+    text: "バランススコアカード（BSC）の4つの視点として、正しい組み合わせはどれか？",
+    options: [
+      "財務・顧客・内部プロセス・学習と成長",
+      "品質・コスト・納期・安全",
+      "人材・技術・財務・市場",
+      "計画・実行・評価・改善"
+    ],
+    answer: 0,
+    explanation: "バランススコアカード（BSC）は、財務・顧客・内部ビジネスプロセス・学習と成長の4視点から組織の戦略を管理するフレームワークです。財務指標だけでなく非財務指標も含めてバランスよく評価します。"
+  },
+  {
+    category: "テクノロジ系",
+    text: "TCP/IP ネットワークにおいて、IP アドレスから MAC アドレスを解決するプロトコルはどれか？",
+    options: ["DHCP", "DNS", "ARP", "ICMP"],
+    answer: 2,
+    explanation: "ARP（Address Resolution Protocol）は、IPアドレスからMACアドレスを解決するプロトコルです。逆にMACアドレスからIPアドレスを解決するのはRARP（Reverse ARP）です。DHCPはIPアドレスの自動割り当て、DNSはドメイン名からIPアドレスへの解決を行います。"
+  },
+  {
+    category: "マネジメント系",
+    text: "システムの信頼性指標において、稼働率の計算式として正しいものはどれか？",
+    options: [
+      "稼働率 = MTTR ÷ (MTBF + MTTR)",
+      "稼働率 = MTBF ÷ (MTBF + MTTR)",
+      "稼働率 = MTBF × MTTR",
+      "稼働率 = MTTR ÷ MTBF"
+    ],
+    answer: 1,
+    explanation: "稼働率 = MTBF ÷ (MTBF + MTTR) です。MTBF（Mean Time Between Failures）は平均故障間隔、MTTR（Mean Time To Repair）は平均修復時間です。稼働率が高いほど信頼性の高いシステムです。"
+  }
+];
+
+let currentIndex = 0;
+let score = 0;
+let answered = false;
+
+function shuffle(arr) {
+  const a = [...arr];
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+}
+
+let shuffledQuestions = shuffle(questions);
+
+function loadQuestion() {
+  answered = false;
+  const q = shuffledQuestions[currentIndex];
+  const total = shuffledQuestions.length;
+
+  document.getElementById('progressFill').style.width = `${(currentIndex / total) * 100}%`;
+  document.getElementById('questionCounter').textContent = `問題 ${currentIndex + 1} / ${total}`;
+  document.getElementById('categoryBadge').textContent = q.category;
+  document.getElementById('questionText').textContent = q.text;
+
+  const container = document.getElementById('optionsContainer');
+  container.innerHTML = '';
+  const labels = ['ア', 'イ', 'ウ', 'エ'];
+
+  q.options.forEach((opt, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'option-btn';
+    btn.innerHTML = `<span class="option-label">${labels[i]}</span>${opt}`;
+    btn.onclick = () => selectAnswer(i);
+    container.appendChild(btn);
+  });
+
+  document.getElementById('explanation').classList.remove('show');
+  document.getElementById('btnNext').classList.remove('show');
+}
+
+function selectAnswer(selectedIndex) {
+  if (answered) return;
+  answered = true;
+
+  const q = shuffledQuestions[currentIndex];
+  const buttons = document.querySelectorAll('.option-btn');
+
+  buttons.forEach((btn, i) => {
+    btn.disabled = true;
+    if (i === q.answer) btn.classList.add('correct');
+    else if (i === selectedIndex) btn.classList.add('incorrect');
+  });
+
+  if (selectedIndex === q.answer) score++;
+
+  const expEl = document.getElementById('explanation');
+  expEl.innerHTML = `<strong>解説：</strong> ${q.explanation}`;
+  expEl.classList.add('show');
+
+  document.getElementById('btnNext').textContent =
+    currentIndex + 1 < shuffledQuestions.length ? '次の問題へ →' : '結果を見る 📊';
+  document.getElementById('btnNext').classList.add('show');
+}
+
+function nextQuestion() {
+  currentIndex++;
+  if (currentIndex < shuffledQuestions.length) {
+    loadQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function showResult() {
+  document.getElementById('quizArea').classList.add('hide');
+  const resultArea = document.getElementById('resultArea');
+  resultArea.classList.add('show');
+
+  const total = shuffledQuestions.length;
+  const accuracy = Math.round((score / total) * 100);
+
+  document.getElementById('scoreNumber').textContent = score;
+  document.getElementById('correctCount').textContent = score;
+  document.getElementById('incorrectCount').textContent = total - score;
+  document.getElementById('accuracyRate').textContent = accuracy + '%';
+
+  let title, message;
+  if (accuracy >= 90) {
+    title = '素晴らしい！合格レベルです🎉';
+    message = 'ITパスポート試験の合格ラインは70%以上です。この調子で本番も頑張りましょう！';
+  } else if (accuracy >= 70) {
+    title = 'もう少しです！合格ラインに達しています✨';
+    message = '合格ラインの70%を超えています。苦手分野を復習してさらに得点を伸ばしましょう。';
+  } else {
+    title = '要復習です📚';
+    message = '合格ラインの70%には届きませんでした。テクノロジ系・マネジメント系・ストラテジ系の3分野をバランスよく学習しましょう。';
+  }
+
+  document.getElementById('resultTitle').textContent = title;
+  document.getElementById('resultMessage').textContent = message;
+
+  document.getElementById('progressFill').style.width = '100%';
+}
+
+function restartQuiz() {
+  currentIndex = 0;
+  score = 0;
+  shuffledQuestions = shuffle(questions);
+
+  document.getElementById('resultArea').classList.remove('show');
+  document.getElementById('quizArea').classList.remove('hide');
+
+  loadQuestion();
+}
+
+// Start
+loadQuestion();
+</script>
+</body>
+</html>
