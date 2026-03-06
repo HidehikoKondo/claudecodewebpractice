@@ -40,6 +40,63 @@
       margin-bottom: 28px;
     }
 
+    /* ===== TOP PAGE ===== */
+    .top-page { display: block; }
+    .top-page.hide { display: none; }
+
+    .category-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .category-card {
+      border: none;
+      border-radius: 14px;
+      padding: 24px 28px;
+      text-align: left;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      color: #fff;
+      font-family: inherit;
+    }
+
+    .category-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 28px rgba(0,0,0,0.25);
+    }
+
+    .category-card.strategy  { background: linear-gradient(135deg, #667eea, #764ba2); }
+    .category-card.management { background: linear-gradient(135deg, #f093fb, #f5576c); }
+    .category-card.technology { background: linear-gradient(135deg, #4facfe, #00f2fe); color: #003d5b; }
+
+    .card-icon { font-size: 2.4rem; flex-shrink: 0; }
+
+    .card-body .card-title {
+      font-size: 1.2rem;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+
+    .card-body .card-desc {
+      font-size: 0.85rem;
+      opacity: 0.85;
+    }
+
+    .card-arrow {
+      margin-left: auto;
+      font-size: 1.4rem;
+      flex-shrink: 0;
+    }
+
+    /* ===== QUIZ PAGE ===== */
+    .quiz-page { display: none; }
+    .quiz-page.show { display: block; }
+
     .progress-bar {
       background: #e0e0e0;
       border-radius: 8px;
@@ -65,12 +122,16 @@
     }
 
     .category-badge {
-      background: #0f3460;
-      color: #fff;
-      padding: 3px 10px;
+      padding: 3px 12px;
       border-radius: 12px;
       font-size: 0.75rem;
+      font-weight: bold;
+      color: #fff;
     }
+
+    .badge-strategy   { background: #764ba2; }
+    .badge-management { background: #f5576c; }
+    .badge-technology { background: #0088cc; }
 
     .question-text {
       font-size: 1.1rem;
@@ -99,6 +160,7 @@
       display: flex;
       align-items: center;
       gap: 12px;
+      font-family: inherit;
     }
 
     .option-btn:hover:not(:disabled) {
@@ -135,7 +197,7 @@
       transition: background 0.2s;
     }
 
-    .option-btn.correct .option-label { background: #28a745; color: #fff; }
+    .option-btn.correct  .option-label { background: #28a745; color: #fff; }
     .option-btn.incorrect .option-label { background: #dc3545; color: #fff; }
 
     .explanation {
@@ -151,7 +213,6 @@
     }
 
     .explanation.show { display: block; }
-
     .explanation strong { color: #0f3460; }
 
     .btn-next {
@@ -166,18 +227,15 @@
       cursor: pointer;
       display: none;
       transition: opacity 0.2s;
+      font-family: inherit;
     }
 
     .btn-next:hover { opacity: 0.9; }
     .btn-next.show { display: block; }
 
-    /* Result screen */
-    .result {
-      text-align: center;
-      display: none;
-    }
-
-    .result.show { display: block; }
+    /* ===== RESULT PAGE ===== */
+    .result-page { display: none; }
+    .result-page.show { display: block; text-align: center; }
 
     .score-circle {
       width: 140px;
@@ -193,15 +251,10 @@
       box-shadow: 0 8px 24px rgba(15,52,96,0.4);
     }
 
-    .score-number {
-      font-size: 2.4rem;
-      font-weight: bold;
-      line-height: 1;
-    }
+    .score-number { font-size: 2.4rem; font-weight: bold; line-height: 1; }
+    .score-label  { font-size: 0.85rem; margin-top: 4px; }
 
-    .score-label { font-size: 0.85rem; margin-top: 4px; }
-
-    .result h2 {
+    .result-page h2 {
       font-size: 1.4rem;
       color: #0f3460;
       margin-bottom: 12px;
@@ -233,21 +286,34 @@
       color: #0f3460;
     }
 
-    .btn-restart {
-      padding: 14px 40px;
-      background: linear-gradient(90deg, #0f3460, #e94560);
-      color: #fff;
+    .btn-group {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-restart, .btn-top {
+      padding: 14px 28px;
       border: none;
       border-radius: 10px;
       font-size: 1rem;
       cursor: pointer;
       transition: opacity 0.2s;
+      font-family: inherit;
     }
 
-    .btn-restart:hover { opacity: 0.9; }
+    .btn-restart {
+      background: linear-gradient(90deg, #0f3460, #e94560);
+      color: #fff;
+    }
 
-    .quiz-area { display: block; }
-    .quiz-area.hide { display: none; }
+    .btn-top {
+      background: #f0f0f0;
+      color: #333;
+    }
+
+    .btn-restart:hover, .btn-top:hover { opacity: 0.85; }
   </style>
 </head>
 <body>
@@ -255,28 +321,53 @@
   <h1>🖥️ ITパスポートクイズ</h1>
   <p class="subtitle">ITパスポート試験の頻出問題にチャレンジしよう！</p>
 
-  <!-- Quiz area -->
-  <div class="quiz-area" id="quizArea">
+  <!-- TOP PAGE -->
+  <div class="top-page" id="topPage">
+    <div class="category-grid">
+      <button class="category-card strategy" onclick="startQuiz('strategy')">
+        <span class="card-icon">📊</span>
+        <div class="card-body">
+          <div class="card-title">ストラテジ系</div>
+          <div class="card-desc">経営戦略・情報戦略・業務分析など</div>
+        </div>
+        <span class="card-arrow">›</span>
+      </button>
+      <button class="category-card management" onclick="startQuiz('management')">
+        <span class="card-icon">📋</span>
+        <div class="card-body">
+          <div class="card-title">マネジメント系</div>
+          <div class="card-desc">プロジェクト管理・サービス管理・開発手法など</div>
+        </div>
+        <span class="card-arrow">›</span>
+      </button>
+      <button class="category-card technology" onclick="startQuiz('technology')">
+        <span class="card-icon">💻</span>
+        <div class="card-body">
+          <div class="card-title">テクノロジ系</div>
+          <div class="card-desc">ハードウェア・ソフトウェア・ネットワーク・セキュリティなど</div>
+        </div>
+        <span class="card-arrow">›</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- QUIZ PAGE -->
+  <div class="quiz-page" id="quizPage">
     <div class="progress-bar">
       <div class="progress-fill" id="progressFill"></div>
     </div>
-
     <div class="question-meta">
       <span id="questionCounter">問題 1 / 10</span>
-      <span class="category-badge" id="categoryBadge">カテゴリ</span>
+      <span class="category-badge" id="categoryBadge"></span>
     </div>
-
     <p class="question-text" id="questionText"></p>
-
     <div class="options" id="optionsContainer"></div>
-
     <div class="explanation" id="explanation"></div>
-
     <button class="btn-next" id="btnNext" onclick="nextQuestion()">次の問題へ →</button>
   </div>
 
-  <!-- Result area -->
-  <div class="result" id="resultArea">
+  <!-- RESULT PAGE -->
+  <div class="result-page" id="resultPage">
     <div class="score-circle">
       <span class="score-number" id="scoreNumber">0</span>
       <span class="score-label">/ 10 問</span>
@@ -297,99 +388,223 @@
         <div>正答率</div>
       </div>
     </div>
-    <button class="btn-restart" onclick="restartQuiz()">もう一度挑戦する 🔄</button>
+    <div class="btn-group">
+      <button class="btn-top" onclick="goTop()">カテゴリ選択に戻る</button>
+      <button class="btn-restart" onclick="restartQuiz()">もう一度挑戦する 🔄</button>
+    </div>
   </div>
 </div>
 
 <script>
-const questions = [
-  {
-    category: "テクノロジ系",
-    text: "OSI参照モデルにおいて、データの暗号化や圧縮を担当する層はどれか？",
-    options: ["トランスポート層", "セッション層", "プレゼンテーション層", "アプリケーション層"],
-    answer: 2,
-    explanation: "プレゼンテーション層（第6層）は、データの表現形式の変換、暗号化・復号化、圧縮・伸長を担当します。アプリケーション層（第7層）はユーザーに最も近い層で、HTTP・FTPなどのプロトコルが該当します。"
-  },
-  {
-    category: "テクノロジ系",
-    text: "CPU の処理速度を向上させる技術のうち、複数の命令を同時に実行するために命令を複数の段階に分けて処理する方式はどれか？",
-    options: ["キャッシュメモリ", "パイプライン", "スーパースカラ", "マルチコア"],
-    answer: 1,
-    explanation: "パイプラインは、CPU の命令処理を複数のステージ（フェッチ・デコード・実行・書き込みなど）に分割し、各ステージを並行して処理することで スループットを向上させる技術です。"
-  },
-  {
-    category: "テクノロジ系",
-    text: "関係データベースにおいて、データの整合性を保つため、外部キーが参照先テーブルに存在する値のみを取れるように制約することを何というか？",
-    options: ["一意性制約", "参照整合性制約", "NOT NULL制約", "チェック制約"],
-    answer: 1,
-    explanation: "参照整合性制約（外部キー制約）は、外部キーの値が参照先テーブルの主キーに存在する値でなければならないという制約です。これによりデータの矛盾を防ぎます。"
-  },
-  {
-    category: "テクノロジ系",
-    text: "次のうち、対称鍵暗号方式に該当するものはどれか？",
-    options: ["RSA", "AES", "DSA", "楕円曲線暗号"],
-    answer: 1,
-    explanation: "AES（Advanced Encryption Standard）は代表的な対称鍵暗号方式です。暗号化と復号に同じ鍵を使います。RSA・DSA・楕円曲線暗号は公開鍵暗号方式（非対称鍵暗号方式）です。"
-  },
-  {
-    category: "マネジメント系",
-    text: "プロジェクトマネジメントにおける WBS（Work Breakdown Structure）の説明として、正しいものはどれか？",
-    options: [
-      "作業の依存関係とスケジュールを表したネットワーク図",
-      "プロジェクトの作業を階層的に分解した成果物指向の構造図",
-      "各作業担当者と役割を示した責任分担表",
-      "コストと進捗を管理するための予算管理表"
-    ],
-    answer: 1,
-    explanation: "WBS（Work Breakdown Structure）は、プロジェクトの全作業を管理可能な小さな単位に階層的に分解した図です。成果物を中心に分解し、スコープの漏れを防ぎます。ネットワーク図はアローダイアグラムやPERTが該当します。"
-  },
-  {
-    category: "マネジメント系",
-    text: "システム開発において、発注者と受注者の間で品質・費用・納期などの要件を明確にした書類はどれか？",
-    options: ["SLA（サービスレベル合意書）", "RFP（提案依頼書）", "NDA（秘密保持契約書）", "SOW（作業範囲記述書）"],
-    answer: 0,
-    explanation: "SLA（Service Level Agreement）は、サービスの提供者と利用者の間で、提供するサービスの品質水準（稼働率、応答時間など）を定めた合意書です。ただし本問はシステム開発文脈なのでSOWも近いですが、品質・費用・納期をまとめた合意文書という点でSLAが最適です。"
-  },
-  {
-    category: "ストラテジ系",
-    text: "企業の情報システムに関する中長期計画を立案し、経営戦略と整合した形でITを活用するための全社的な計画を何というか？",
-    options: ["BCP（事業継続計画）", "EA（エンタープライズアーキテクチャ）", "情報システム戦略（IT戦略）", "DFD（データフロー図）"],
-    answer: 2,
-    explanation: "情報システム戦略（IT戦略）は、経営戦略を実現するために情報システムをどのように活用・整備するかを定めた中長期計画です。EA（エンタープライズアーキテクチャ）は組織全体のITと業務の体系的な設計手法で、IT戦略の実現手段の一つです。"
-  },
-  {
-    category: "ストラテジ系",
-    text: "バランススコアカード（BSC）の4つの視点として、正しい組み合わせはどれか？",
-    options: [
-      "財務・顧客・内部プロセス・学習と成長",
-      "品質・コスト・納期・安全",
-      "人材・技術・財務・市場",
-      "計画・実行・評価・改善"
-    ],
-    answer: 0,
-    explanation: "バランススコアカード（BSC）は、財務・顧客・内部ビジネスプロセス・学習と成長の4視点から組織の戦略を管理するフレームワークです。財務指標だけでなく非財務指標も含めてバランスよく評価します。"
-  },
-  {
-    category: "テクノロジ系",
-    text: "TCP/IP ネットワークにおいて、IP アドレスから MAC アドレスを解決するプロトコルはどれか？",
-    options: ["DHCP", "DNS", "ARP", "ICMP"],
-    answer: 2,
-    explanation: "ARP（Address Resolution Protocol）は、IPアドレスからMACアドレスを解決するプロトコルです。逆にMACアドレスからIPアドレスを解決するのはRARP（Reverse ARP）です。DHCPはIPアドレスの自動割り当て、DNSはドメイン名からIPアドレスへの解決を行います。"
-  },
-  {
-    category: "マネジメント系",
-    text: "システムの信頼性指標において、稼働率の計算式として正しいものはどれか？",
-    options: [
-      "稼働率 = MTTR ÷ (MTBF + MTTR)",
-      "稼働率 = MTBF ÷ (MTBF + MTTR)",
-      "稼働率 = MTBF × MTTR",
-      "稼働率 = MTTR ÷ MTBF"
-    ],
-    answer: 1,
-    explanation: "稼働率 = MTBF ÷ (MTBF + MTTR) です。MTBF（Mean Time Between Failures）は平均故障間隔、MTTR（Mean Time To Repair）は平均修復時間です。稼働率が高いほど信頼性の高いシステムです。"
-  }
-];
+const allQuestions = {
+  strategy: [
+    {
+      text: "企業の情報システムに関する中長期計画を立案し、経営戦略と整合した形でITを活用するための全社的な計画を何というか？",
+      options: ["BCP（事業継続計画）", "EA（エンタープライズアーキテクチャ）", "情報システム戦略（IT戦略）", "DFD（データフロー図）"],
+      answer: 2,
+      explanation: "情報システム戦略（IT戦略）は、経営戦略を実現するために情報システムをどのように活用・整備するかを定めた中長期計画です。EA（エンタープライズアーキテクチャ）は組織全体のITと業務の体系的な設計手法で、IT戦略の実現手段の一つです。"
+    },
+    {
+      text: "バランススコアカード（BSC）の4つの視点として、正しい組み合わせはどれか？",
+      options: ["財務・顧客・内部プロセス・学習と成長", "品質・コスト・納期・安全", "人材・技術・財務・市場", "計画・実行・評価・改善"],
+      answer: 0,
+      explanation: "バランススコアカード（BSC）は、財務・顧客・内部ビジネスプロセス・学習と成長の4視点から組織の戦略を管理するフレームワークです。財務指標だけでなく非財務指標も含めてバランスよく評価します。"
+    },
+    {
+      text: "SWOT分析において「S」が示すものはどれか？",
+      options: ["戦略（Strategy）", "強み（Strengths）", "安全（Safety）", "スキル（Skills）"],
+      answer: 1,
+      explanation: "SWOT分析のSはStrengths（強み）です。S（強み）・W（弱み）・O（機会）・T（脅威）の4要素で自社を分析する経営戦略フレームワークです。内部環境（強み・弱み）と外部環境（機会・脅威）を組み合わせて戦略を立案します。"
+    },
+    {
+      text: "プロダクトポートフォリオマネジメント（PPM）において、市場成長率が高く、市場占有率も高い事業を何というか？",
+      options: ["問題児", "花形（スター）", "金のなる木", "負け犬"],
+      answer: 1,
+      explanation: "PPMではボストンコンサルティンググループが提唱した4象限で事業を分類します。市場成長率高・市場占有率高が「花形（スター）」です。市場成長率低・市場占有率高が「金のなる木」、市場成長率高・低シェアが「問題児」、両方低が「負け犬」です。"
+    },
+    {
+      text: "既存のビジネスプロセスを抜本的に見直し、業績を劇的に向上させることを目的とした手法を何というか？",
+      options: ["BPR（ビジネスプロセスリエンジニアリング）", "BPO（ビジネスプロセスアウトソーシング）", "ERP（基幹業務システム）", "CRM（顧客関係管理）"],
+      answer: 0,
+      explanation: "BPR（Business Process Re-engineering）は、業務プロセスをゼロから根本的に再設計して劇的な業績向上を図る手法です。BPOは業務プロセスを外部委託すること、ERPは基幹業務を統合したシステム、CRMは顧客との関係を管理・強化するシステムです。"
+    },
+    {
+      text: "顧客との長期的な関係を構築・維持し、顧客満足度を高めることで収益向上を図るシステムやマネジメント手法を何というか？",
+      options: ["SCM（サプライチェーンマネジメント）", "ERP（エンタープライズリソースプランニング）", "CRM（カスタマーリレーションシップマネジメント）", "KMS（ナレッジマネジメントシステム）"],
+      answer: 2,
+      explanation: "CRM（Customer Relationship Management）は、顧客情報を一元管理し、顧客との関係を強化して顧客満足度・ロイヤリティを高めるシステム・手法です。SCMは原材料から顧客までの供給連鎖全体を最適化する手法、ERPは企業資源全体を統合管理するシステムです。"
+    },
+    {
+      text: "他社には真似できない、その企業固有の強みや競争優位の源泉となる中核的な能力を何というか？",
+      options: ["コアコンピタンス", "ベンチマーキング", "アウトソーシング", "バリューチェーン"],
+      answer: 0,
+      explanation: "コアコンピタンス（Core Competence）は、競合他社が容易に模倣できない自社固有の核となる能力・技術・ノウハウのことです。ベンチマーキングは優良企業の手法を比較・参考にする手法、バリューチェーンはポーターが提唱した企業の価値創造活動の分析手法です。"
+    },
+    {
+      text: "投資に対して得られる利益の割合を表す指標で、投資の効率性を評価するために使われるものはどれか？",
+      options: ["ROI（投資利益率）", "KPI（重要業績評価指標）", "NPV（正味現在価値）", "IRR（内部収益率）"],
+      answer: 0,
+      explanation: "ROI（Return On Investment）は「（利益 ÷ 投資額）× 100」で計算され、投資に対してどれだけ利益を得られたかを示す指標です。ITシステム投資の効果測定にも広く使われます。KPIは目標達成度を測る指標、NPVは将来のキャッシュフローを現在価値に換算した指標です。"
+    },
+    {
+      text: "自然災害やシステム障害などの緊急事態が発生した際に、事業を継続・早期復旧させるための計画を何というか？",
+      options: ["SLA（サービスレベル合意書）", "BCP（事業継続計画）", "DR（ディザスタリカバリ）", "RTO（目標復旧時間）"],
+      answer: 1,
+      explanation: "BCP（Business Continuity Plan：事業継続計画）は、緊急事態・災害時でも重要な事業を継続または早期に復旧するための計画です。DR（ディザスタリカバリ）はITシステムの復旧に焦点を当てた概念、RTOは目標復旧時間、SLAはサービス品質の合意書です。"
+    },
+    {
+      text: "企業の経営資源（ヒト・モノ・カネ・情報）を統合的に管理し、経営の効率化を図るシステムはどれか？",
+      options: ["CRM", "SCM", "ERP", "MRP"],
+      answer: 2,
+      explanation: "ERP（Enterprise Resource Planning：企業資源計画）は、財務・人事・製造・販売・在庫など企業の基幹業務を統合したシステムです。部門間でデータを共有し、リアルタイムな経営情報の把握・意思決定を支援します。MRPは資材所要量計画で製造業における部品・原材料の調達計画システムです。"
+    }
+  ],
 
+  management: [
+    {
+      text: "プロジェクトマネジメントにおける WBS（Work Breakdown Structure）の説明として、正しいものはどれか？",
+      options: [
+        "作業の依存関係とスケジュールを表したネットワーク図",
+        "プロジェクトの作業を階層的に分解した成果物指向の構造図",
+        "各作業担当者と役割を示した責任分担表",
+        "コストと進捗を管理するための予算管理表"
+      ],
+      answer: 1,
+      explanation: "WBS（Work Breakdown Structure）は、プロジェクトの全作業を管理可能な小さな単位に階層的に分解した図です。成果物を中心に分解し、スコープの漏れを防ぎます。ネットワーク図はアローダイアグラムやPERTが該当します。"
+    },
+    {
+      text: "システムの信頼性指標において、稼働率の計算式として正しいものはどれか？",
+      options: [
+        "稼働率 = MTTR ÷ (MTBF + MTTR)",
+        "稼働率 = MTBF ÷ (MTBF + MTTR)",
+        "稼働率 = MTBF × MTTR",
+        "稼働率 = MTTR ÷ MTBF"
+      ],
+      answer: 1,
+      explanation: "稼働率 = MTBF ÷ (MTBF + MTTR) です。MTBF（Mean Time Between Failures）は平均故障間隔、MTTR（Mean Time To Repair）は平均修復時間です。稼働率が高いほど信頼性の高いシステムです。"
+    },
+    {
+      text: "プロジェクトのスケジュール管理で用いられる、作業の開始・終了を横棒で表したチャートを何というか？",
+      options: ["アローダイアグラム", "ガントチャート", "フィッシュボーンダイアグラム", "ブレークダウンチャート"],
+      answer: 1,
+      explanation: "ガントチャートは、縦軸に作業項目、横軸に時間をとり、各作業の期間を横棒で表した図です。作業の進捗状況を視覚的に把握しやすく、プロジェクト管理で広く使用されます。アローダイアグラムは作業の依存関係を矢印で表したネットワーク図です。"
+    },
+    {
+      text: "アローダイアグラム（PERT図）において、プロジェクト全体の完了を最も遅らせる最長経路を何というか？",
+      options: ["クリティカルパス", "フロートパス", "ベースラインパス", "マイルストーン"],
+      answer: 0,
+      explanation: "クリティカルパスは、プロジェクト開始から完了までの経路の中で最も所要時間が長い経路です。クリティカルパス上の作業が遅延するとプロジェクト全体の完了が遅れるため、重点管理が必要です。フロートは作業の余裕時間です。"
+    },
+    {
+      text: "ソフトウェア開発において、要件定義→設計→実装→テスト→運用の各工程を順に実施していく開発モデルはどれか？",
+      options: ["スクラム", "ウォーターフォールモデル", "スパイラルモデル", "XP（エクストリームプログラミング）"],
+      answer: 1,
+      explanation: "ウォーターフォールモデルは、上流工程から下流工程へ川の流れのように順次進める開発モデルです。各工程を完結させてから次工程に進むため、計画・管理しやすい反面、後工程での仕様変更に弱いという特徴があります。"
+    },
+    {
+      text: "テスト技法のうち、プログラムの内部構造を考慮せず、入力と出力の仕様のみからテストケースを設計する手法はどれか？",
+      options: ["ホワイトボックステスト", "ブラックボックステスト", "パスカバレッジテスト", "ミューテーションテスト"],
+      answer: 1,
+      explanation: "ブラックボックステストは、プログラムの内部構造を考慮せず、仕様書に基づいて入力と期待される出力からテストケースを設計する手法です。同値分割・境界値分析などの技法が使われます。ホワイトボックステストは内部構造（コード）を参照してテスト設計します。"
+    },
+    {
+      text: "短いイテレーション（スプリント）を繰り返しながら段階的に製品を開発するアジャイル開発フレームワークはどれか？",
+      options: ["スクラム", "ウォーターフォール", "V字モデル", "RAD"],
+      answer: 0,
+      explanation: "スクラムは1〜4週間のスプリントを繰り返し、動作するソフトウェアを段階的にリリースするアジャイル開発フレームワークです。プロダクトオーナー・スクラムマスター・開発チームの3つのロールがあります。"
+    },
+    {
+      text: "ITサービスマネジメントの国際規格で、ITサービスの計画・設計・移行・運用・改善のベストプラクティスをまとめたフレームワークはどれか？",
+      options: ["PMBOK", "ITIL", "CMMI", "ISO 9001"],
+      answer: 1,
+      explanation: "ITIL（Information Technology Infrastructure Library）は、ITサービスマネジメントのベストプラクティス集です。サービスの計画・設計・移行・運用・継続的改善のライフサイクルを体系化しています。PMBOKはプロジェクト管理の知識体系、CMMIはソフトウェア開発能力成熟度モデルです。"
+    },
+    {
+      text: "システム開発において、発注者とベンダーがサービスの品質水準（稼働率・応答時間など）を定めた合意書をなんと呼ぶか？",
+      options: ["NDA（秘密保持契約書）", "RFP（提案依頼書）", "SLA（サービスレベル合意書）", "SOW（作業範囲記述書）"],
+      answer: 2,
+      explanation: "SLA（Service Level Agreement：サービスレベル合意書）は、ITサービスの提供者と利用者の間で、サービス品質の水準（稼働率・応答時間・障害対応時間など）を数値で合意した文書です。NDAは機密保持契約、RFPはベンダーへの提案依頼書、SOWは作業範囲記述書です。"
+    },
+    {
+      text: "プロジェクトマネジメントの国際標準的な知識体系であり、プロジェクト管理の10の知識エリアと5つのプロセス群を定義しているものはどれか？",
+      options: ["ITIL", "COBIT", "PMBOK", "BABOK"],
+      answer: 2,
+      explanation: "PMBOK（Project Management Body Of Knowledge）はPMI（プロジェクトマネジメント協会）が策定したプロジェクト管理の知識体系です。統合・スコープ・スケジュール・コスト・品質・資源・コミュニケーション・リスク・調達・ステークホルダーの10知識エリアを体系化しています。"
+    }
+  ],
+
+  technology: [
+    {
+      text: "OSI参照モデルにおいて、データの暗号化や圧縮を担当する層はどれか？",
+      options: ["トランスポート層", "セッション層", "プレゼンテーション層", "アプリケーション層"],
+      answer: 2,
+      explanation: "プレゼンテーション層（第6層）は、データの表現形式の変換、暗号化・復号化、圧縮・伸長を担当します。アプリケーション層（第7層）はユーザーに最も近い層で、HTTP・FTPなどのプロトコルが該当します。"
+    },
+    {
+      text: "CPU の処理速度を向上させる技術のうち、複数の命令を同時に実行するために命令を複数の段階に分けて処理する方式はどれか？",
+      options: ["キャッシュメモリ", "パイプライン", "スーパースカラ", "マルチコア"],
+      answer: 1,
+      explanation: "パイプラインは、CPU の命令処理を複数のステージ（フェッチ・デコード・実行・書き込みなど）に分割し、各ステージを並行して処理することでスループットを向上させる技術です。"
+    },
+    {
+      text: "関係データベースにおいて、データの整合性を保つため、外部キーが参照先テーブルに存在する値のみを取れるように制約することを何というか？",
+      options: ["一意性制約", "参照整合性制約", "NOT NULL制約", "チェック制約"],
+      answer: 1,
+      explanation: "参照整合性制約（外部キー制約）は、外部キーの値が参照先テーブルの主キーに存在する値でなければならないという制約です。これによりデータの矛盾を防ぎます。"
+    },
+    {
+      text: "次のうち、対称鍵暗号方式に該当するものはどれか？",
+      options: ["RSA", "AES", "DSA", "楕円曲線暗号"],
+      answer: 1,
+      explanation: "AES（Advanced Encryption Standard）は代表的な対称鍵暗号方式です。暗号化と復号に同じ鍵を使います。RSA・DSA・楕円曲線暗号は公開鍵暗号方式（非対称鍵暗号方式）です。"
+    },
+    {
+      text: "TCP/IP ネットワークにおいて、IP アドレスから MAC アドレスを解決するプロトコルはどれか？",
+      options: ["DHCP", "DNS", "ARP", "ICMP"],
+      answer: 2,
+      explanation: "ARP（Address Resolution Protocol）は、IPアドレスからMACアドレスを解決するプロトコルです。逆にMACアドレスからIPアドレスを解決するのはRARP（Reverse ARP）です。DHCPはIPアドレスの自動割り当て、DNSはドメイン名からIPアドレスへの解決を行います。"
+    },
+    {
+      text: "複数のハードディスクを組み合わせて冗長性や性能を向上させる技術で、1台が故障してもデータを失わないように2台のディスクにまったく同じデータを書き込む方式はどれか？",
+      options: ["RAID 0（ストライピング）", "RAID 1（ミラーリング）", "RAID 5（分散パリティ）", "RAID 6（二重パリティ）"],
+      answer: 1,
+      explanation: "RAID 1（ミラーリング）は、2台以上のディスクにまったく同じデータを書き込む方式です。1台が故障しても他のディスクからデータを復旧できます。RAID 0はデータを分散し速度向上のみ（冗長性なし）、RAID 5はパリティ情報を分散して1台故障まで対応します。"
+    },
+    {
+      text: "マルウェアのうち、ファイルを暗号化して使用不能にし、復号と引き換えに金銭を要求するものを何というか？",
+      options: ["スパイウェア", "アドウェア", "ランサムウェア", "ルートキット"],
+      answer: 2,
+      explanation: "ランサムウェア（Ransomware）は、感染した端末のファイルを暗号化して利用不能にし、復号鍵と引き換えに身代金（Ransom）を要求するマルウェアです。スパイウェアは情報を窃取、アドウェアは広告を表示、ルートキットは攻撃者が不正アクセスを継続するための隠蔽ツールです。"
+    },
+    {
+      text: "SQLにおいて、テーブルのデータをグループ化して集計する際に使用する句はどれか？",
+      options: ["ORDER BY", "WHERE", "GROUP BY", "HAVING"],
+      answer: 2,
+      explanation: "GROUP BY句は、指定した列の値が同じ行をグループ化し、COUNT・SUM・AVGなどの集計関数を適用するために使います。HAVING句はGROUP BY後のグループに対して条件を指定します。WHERE句はGROUP BY前の行に対して条件を指定します。"
+    },
+    {
+      text: "外部からの不正アクセスを防ぐファイアウォールにおいて、インターネットと内部ネットワークの間に設ける緩衝地帯を何というか？",
+      options: ["VPN", "DMZ（非武装地帯）", "NAT", "プロキシ"],
+      answer: 1,
+      explanation: "DMZ（DeMilitarized Zone：非武装地帯）は、インターネットと社内ネットワークの間に設けるセグメントです。WebサーバやDNSサーバなど外部公開サーバをここに置き、内部ネットワークへの直接アクセスを防ぎます。VPNは暗号化された仮想専用線、NATはIPアドレス変換技術です。"
+    },
+    {
+      text: "プログラムの脆弱性を利用して、入力フィールドに想定外のSQL文を挿入することで不正にデータベースを操作する攻撃手法はどれか？",
+      options: ["クロスサイトスクリプティング（XSS）", "SQLインジェクション", "バッファオーバーフロー", "フィッシング"],
+      answer: 1,
+      explanation: "SQLインジェクションは、Webアプリケーションの入力フィールドに悪意のあるSQL文を挿入し、データベースの情報を不正取得・改ざん・削除する攻撃です。対策としてはプリペアドステートメント（バインド変数）の使用や入力値のサニタイズが有効です。"
+    }
+  ]
+};
+
+const categoryConfig = {
+  strategy:   { label: 'ストラテジ系',   badgeClass: 'badge-strategy' },
+  management: { label: 'マネジメント系', badgeClass: 'badge-management' },
+  technology: { label: 'テクノロジ系',   badgeClass: 'badge-technology' }
+};
+
+let currentCategory = null;
+let shuffledQuestions = [];
 let currentIndex = 0;
 let score = 0;
 let answered = false;
@@ -403,7 +618,22 @@ function shuffle(arr) {
   return a;
 }
 
-let shuffledQuestions = shuffle(questions);
+function startQuiz(category) {
+  currentCategory = category;
+  currentIndex = 0;
+  score = 0;
+  shuffledQuestions = shuffle(allQuestions[category]).slice(0, 10);
+
+  document.getElementById('topPage').classList.add('hide');
+  document.getElementById('quizPage').classList.add('show');
+
+  const cfg = categoryConfig[category];
+  const badge = document.getElementById('categoryBadge');
+  badge.textContent = cfg.label;
+  badge.className = 'category-badge ' + cfg.badgeClass;
+
+  loadQuestion();
+}
 
 function loadQuestion() {
   answered = false;
@@ -412,7 +642,6 @@ function loadQuestion() {
 
   document.getElementById('progressFill').style.width = `${(currentIndex / total) * 100}%`;
   document.getElementById('questionCounter').textContent = `問題 ${currentIndex + 1} / ${total}`;
-  document.getElementById('categoryBadge').textContent = q.category;
   document.getElementById('questionText').textContent = q.text;
 
   const container = document.getElementById('optionsContainer');
@@ -450,9 +679,9 @@ function selectAnswer(selectedIndex) {
   expEl.innerHTML = `<strong>解説：</strong> ${q.explanation}`;
   expEl.classList.add('show');
 
-  document.getElementById('btnNext').textContent =
-    currentIndex + 1 < shuffledQuestions.length ? '次の問題へ →' : '結果を見る 📊';
-  document.getElementById('btnNext').classList.add('show');
+  const btnNext = document.getElementById('btnNext');
+  btnNext.textContent = currentIndex + 1 < shuffledQuestions.length ? '次の問題へ →' : '結果を見る 📊';
+  btnNext.classList.add('show');
 }
 
 function nextQuestion() {
@@ -465,9 +694,8 @@ function nextQuestion() {
 }
 
 function showResult() {
-  document.getElementById('quizArea').classList.add('hide');
-  const resultArea = document.getElementById('resultArea');
-  resultArea.classList.add('show');
+  document.getElementById('quizPage').classList.remove('show');
+  document.getElementById('resultPage').classList.add('show');
 
   const total = shuffledQuestions.length;
   const accuracy = Math.round((score / total) * 100);
@@ -486,7 +714,7 @@ function showResult() {
     message = '合格ラインの70%を超えています。苦手分野を復習してさらに得点を伸ばしましょう。';
   } else {
     title = '要復習です📚';
-    message = '合格ラインの70%には届きませんでした。テクノロジ系・マネジメント系・ストラテジ系の3分野をバランスよく学習しましょう。';
+    message = '合格ラインの70%には届きませんでした。解説をよく読んで再挑戦してみましょう。';
   }
 
   document.getElementById('resultTitle').textContent = title;
@@ -496,18 +724,15 @@ function showResult() {
 }
 
 function restartQuiz() {
-  currentIndex = 0;
-  score = 0;
-  shuffledQuestions = shuffle(questions);
-
-  document.getElementById('resultArea').classList.remove('show');
-  document.getElementById('quizArea').classList.remove('hide');
-
-  loadQuestion();
+  document.getElementById('resultPage').classList.remove('show');
+  startQuiz(currentCategory);
 }
 
-// Start
-loadQuestion();
+function goTop() {
+  document.getElementById('resultPage').classList.remove('show');
+  document.getElementById('quizPage').classList.remove('show');
+  document.getElementById('topPage').classList.remove('hide');
+}
 </script>
 </body>
 </html>
